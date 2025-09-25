@@ -11,8 +11,11 @@
 #define debug(x) cerr << #x <<" "; _print(x); cerr << endl;
 #else
 #include <bits/stdc++.h>
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
 #define debug(x)
 using namespace std;
+using namespace __gnu_pbds;
 #endif
 
 /* macros */
@@ -26,17 +29,70 @@ using namespace std;
 #define togglebit(n, i) ((n) ^ (1LL << (i)))
 #define lsb(n)          ((n) & (-(n)))
 #define msb_pos(n)      ((x) == 0 ? -1 : 31 - __builtin_clzll(x))
-#define yes             puts("yes")
-#define Yes             puts("Yes")
-#define YES             puts("YES")
-#define no              puts("no")
-#define No              puts("No")
-#define NO              puts("NO")
+#define yes             cout << "yes\n"
+#define Yes             cout << "Yes\n"
+#define YES             cout << "YES\n"
+#define NO              cout << "NO\n"
+#define no              cout << "no\n"
+#define No              cout << "No\n"
 
 /* typedefs */
 #define ll  long long
 #define ull unsigned long long
 #define ld  long double
+
+/* custom data types */
+#ifndef ONPC
+template <typename T> using ordered_set =
+    tree<T, null_type, less<T>, rb_tree_tag, tree_order_statistics_node_update>;
+template <typename T> struct ordered_multiset {
+	ordered_set<pair<T, int>> vals;
+	set<pair<T, int>>         best; /* start at -1 */
+
+	/* helper, find the lowest value that represents the element */
+	int findbest(T val) { return (*best.upper_bound(make_pair(val - 1, 0))).second; }
+
+	/* is element in set */
+	bool contains(T val) { return vals.find(make_pair(val, -1)) != vals.end(); }
+
+	void insert(T val) {
+		if (contains(val)) { /* already in, update lowest value and insert a new one */
+			int loc = findbest(val);
+			best.erase(make_pair(val, loc));
+			best.insert(make_pair(val, loc - 1));
+			vals.insert(make_pair(val, loc - 1));
+		} else { /* make lowest value -1 and insert it */
+			best.insert(make_pair(val, -1));
+			vals.insert(make_pair(val, -1));
+		}
+	}
+
+	void erase(T val) { /* erases one */
+		if (!contains(val))
+			return;     /* not in */
+		T loc = findbest(val);
+
+		/* remove the element and its best */
+		best.erase(make_pair(val, loc));
+		vals.erase(make_pair(val, loc));
+		if (loc != -1)
+			best.insert(make_pair(val, loc + 1)); /* more elements in set, update best */
+	}
+
+	/* unmodified functions */
+	T find_by_order(int k) { return (*vals.find_by_order(k)).first; }
+	int order_of_key(T k) { return vals.order_of_key(make_pair(k - 1, 0)); }
+	auto begin() { return vals.begin(); }
+	auto end() { return vals.end(); }
+	auto rbegin() { return vals.rbegin(); }
+	auto rend() { return vals.rend(); }
+	int size() { return vals.size(); }
+	void clear() { vals.clear(); best.clear(); }
+	int count(T k) { return vals.order_of_key({ k, 0 }) - vals.order_of_key({ k - 1, 0 }); }
+	auto lower_bound(T k) { return vals.lower_bound(make_pair(k - 1, 0)); }
+	auto upper_bound(T k) { return vals.upper_bound(make_pair(k, 0)); }
+};
+#endif
 
 /* constants */
 constexpr int       MOD   = 1e9 + 7;
@@ -98,210 +154,6 @@ long long mod_pow(long long a, long long b, long long m = MOD) {
 	return res;
 }
 long long mod_inv(long long a, long long m = MOD) { return mod_pow(a, m - 2, m); }
-
-/* algorithms */
-// Sieve
-vector<int> spf;
-
-void sieve(int n) {
-	spf.assign(n + 1, 1);
-	spf[0] = spf[1] = 0;
-	for (int i = 2; i * i <= n; ++i)
-		if (spf[i])
-			for (int j = i * i; j <= n; j += i)
-				spf[j] = 0;
-}
-
-// DSU
-struct DSU {
-		vector<int> parent, size;
-
-		DSU(int n) : parent(n), size(n, 1) {
-			iota(parent.begin(), parent.end(), 0);
-		}
-
-		int find(int x) {
-			return (parent[x] == x) ? x : parent[x] = find(parent[x]);
-		}
-
-		bool unite(int a, int b) {
-			a = find(a);
-			b = find(b);
-			if (a == b)
-				return false;
-			if (size[a] < size[b])
-				swap(a, b);
-			parent[b]  = a;
-			size[a]   += size[b];
-			return true;
-		}
-};
-
-// BIT (Fenwick)
-struct BIT {
-		int         n;
-		vector<int> tree;
-
-		BIT(int size) : n(size), tree(size + 1) {
-		}
-
-		void update(int index, int value) {
-			for (++index; index <= n; index += index & -index)
-				tree[index] += value;
-		}
-
-		int query(int index) {
-			int result = 0;
-			for (++index; index > 0; index -= index & -index)
-				result += tree[index];
-			return result;
-		}
-
-		int query(int left, int right) {
-			return query(right) - query(left - 1);
-		}
-};
-
-// SegTree (RSQ)
-struct SegTree {
-		int               n;
-		vector<long long> tree;
-
-		SegTree(int size) : n(size), tree(4 * n) {
-		}
-
-		void update(int index, long long value, int node = 1, int left = 0,
-		            int right = -1) {
-			if (right == -1)
-				right = n - 1;
-			if (left == right) {
-				tree[node] = value;
-				return;
-			}
-			int mid = (left + right) / 2;
-			if (index <= mid)
-				update(index, value, 2 * node, left, mid);
-			else
-				update(index, value, 2 * node + 1, mid + 1, right);
-
-			tree[node] = tree[2 * node] + tree[2 * node + 1];
-		}
-
-		long long query(int ql, int qr, int node = 1, int left = 0,
-		                int right = -1) {
-			if (right == -1)
-				right = n - 1;
-			if (qr < left || ql > right)
-				return 0;
-			if (ql <= left && right <= qr)
-				return tree[node];
-
-			int mid = (left + right) / 2;
-			return query(ql, qr, 2 * node, left, mid)
-			     + query(ql, qr, 2 * node + 1, mid + 1, right);
-		}
-};
-
-// SparseTable (RMQ)
-struct SparseTable {
-		vector<vector<int> > table;
-		vector<int>          log;
-
-		SparseTable(const vector<int>& values) {
-			int n = values.size();
-			log.assign(n + 1, 0);
-			for (int i = 2; i <= n; ++i)
-				log[i] = log[i / 2] + 1;
-
-			table.assign(log[n] + 1, vector<int>(n));
-			table[0] = values;
-
-			for (int j = 1; j <= log[n]; ++j)
-				for (int i = 0; i + (1 << j) <= n; ++i)
-					table[j][i] =
-					    min(table[j - 1][i], table[j - 1][i + (1 << (j - 1))]);
-		}
-
-		int query(int left, int right) {
-			int j = log[right - left + 1];
-			return min(table[j][left], table[j][right - (1 << j) + 1]);
-		}
-};
-
-// Matrix
-using Matrix = vector<vector<long long> >;
-
-Matrix matrix_multiply(const Matrix& a, const Matrix& b, long long mod = MOD) {
-	int    rows = a.size(), cols = b[0].size(), inner = b.size();
-	Matrix result(rows, vector<long long>(cols, 0));
-
-	for (int i = 0; i < rows; ++i)
-		for (int k = 0; k < inner; ++k)
-			for (int j = 0; j < cols; ++j)
-				result[i][j] = (result[i][j] + a[i][k] * b[k][j] % mod) % mod;
-
-	return result;
-}
-
-Matrix matrix_power(Matrix base, long long exponent, long long mod = MOD) {
-	int    n = base.size();
-	Matrix result(n, vector<long long>(n, 0));
-	for (int i = 0; i < n; ++i)
-		result[i][i] = 1;
-
-	while (exponent > 0) {
-		if (exponent % 2 == 1)
-			result = matrix_multiply(result, base, mod);
-		base      = matrix_multiply(base, base, mod);
-		exponent /= 2;
-	}
-
-	return result;
-}
-
-// Z-Function (Z-Algorithm)
-vector<int> z_function(const string& s) {
-	int         n = s.length();
-	vector<int> z(n);
-	int         left = 0, right = 0;
-
-	for (int i = 1; i < n; ++i) {
-		if (i <= right)
-			z[i] = min(right - i + 1, z[i - left]);
-		while (i + z[i] < n && s[z[i]] == s[i + z[i]])
-			++z[i];
-		if (i + z[i] - 1 > right)
-			left = i, right = i + z[i] - 1;
-	}
-	return z;
-}
-
-// KMP
-vector<int> prefix_function(const string& s) {
-	int         n = s.length();
-	vector<int> pi(n);
-	for (int i = 1; i < n; ++i) {
-		int j = pi[i - 1];
-		while (j > 0 && s[i] != s[j])
-			j = pi[j - 1];
-		if (s[i] == s[j])
-			++j;
-		pi[i] = j;
-	}
-	return pi;
-}
-
-// Binary Search
-int binary_search_index(const vector<int>& arr, int target) {
-    int left = 0, right = arr.size() - 1;
-    while (left <= right) {
-        int mid = left + (right - left) / 2;
-        if (arr[mid] == target)
-            return mid;
-        (arr[mid] < target) ? (left = mid + 1) : (right = mid - 1);
-    }
-    return -1;
-}
 // clang-format on
 /// }}}
 
