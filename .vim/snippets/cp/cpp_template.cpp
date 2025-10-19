@@ -35,16 +35,29 @@ using namespace __gnu_pbds;
 #define NO              cout << "NO\n"
 #define no              cout << "no\n"
 #define No              cout << "No\n"
+#define __true          cout << "true\n"
+#define __True          cout << "True\n"
+#define __false         cout << "false\n"
+#define __False         cout << "False\n"
 
 /* typedefs */
-#define ll  long long
-#define ull unsigned long long
-#define ld  long double
+using ll  = long long;
+using ull = unsigned long long;
+using ld  = long double;
+using u8  = uint8_t;
+using u16 = uint16_t;
+using u32 = uint32_t;
+using u64 = uint64_t;
+using i8  = int8_t;
+using i16 = int16_t;
+using i32 = int32_t;
+using i64 = int64_t;
 
 /* custom data types */
 #ifndef ONPC
 template <typename T> using ordered_set =
     tree<T, null_type, less<T>, rb_tree_tag, tree_order_statistics_node_update>;
+#if __cplusplus >= 201402L
 template <typename T> struct ordered_multiset {
 	ordered_set<pair<T, int>> vals;
 	set<pair<T, int>>         best; /* start at -1 */
@@ -93,6 +106,7 @@ template <typename T> struct ordered_multiset {
 	auto upper_bound(T k) { return vals.upper_bound(make_pair(k, 0)); }
 };
 #endif
+#endif
 
 /* constants */
 constexpr int       MOD   = 1e9 + 7;
@@ -100,19 +114,43 @@ constexpr int       MX    = 2e5 + 5;
 constexpr long long INF   = 1e18;
 constexpr int       N     = 2e5 + 5;
 constexpr double    EPS   = 1e-9;
-constexpr int       dx[4] = { 1, 0, -1, 0 };
-constexpr int       dy[4] = { 0, 1, 0, -1 };
+constexpr int       dx[4] = { 0, 1, -1, 0 };
+constexpr int       dy[4] = { -1, 0, 0, 1 };
 
 /* templates */
-template <typename Container> auto sum(const Container& c) {
+#if __cplusplus < 201402L
+template <typename Container, typename BinaryOp>
+typename decay<decltype(*begin(declval<Container>()))>::type
+sum(const Container& c, BinaryOp op) {
+    typedef typename decay<decltype(*c.begin())>::type T;
+    return std::accumulate(c.begin(), c.end(), T(0), op);
+}
+
+template <typename Container>
+typename decay<decltype(*begin(declval<Container>()))>::type
+sum(const Container& c) {
+    typedef typename decay<decltype(*c.begin())>::type T;
+    return std::accumulate(c.begin(), c.end(), T(0));
+}
+
+template <typename Container>
+typename decay<decltype(*begin(declval<Container>()))>::type
+prod(const Container& c) {
+    typedef typename decay<decltype(*c.begin())>::type T;
+    return std::accumulate(c.begin(), c.end(), T(1), std::multiplies<T>());
+}
+#else
+template <typename Container, typename BinaryOp = plus<>>
+auto sum(const Container& c, BinaryOp op = {}) {
 	using T = typename decay<decltype(*c.begin())>::type;
-	return accumulate(c.begin(), c.end(), T { 0 });
+	return accumulate(c.begin(), c.end(), T { 0 }, op);
 }
 
 template <typename Container> auto prod(const Container& c) {
 	using T = typename decay<decltype(*c.begin())>::type;
-	return accumulate(c.begin(), c.end(), T { 0 }, multiplies<>());
+	return accumulate(c.begin(), c.end(), T { 1 }, multiplies<>());
 }
+#endif
 
 template <typename T> vector<vector<T> > gps(const vector<T>& v) {
 	return accumulate(v.begin(), v.end(), vector<vector<T> > { {} },
@@ -135,13 +173,30 @@ struct uniq_t {
     }
 } uniq;
 
+namespace Saif {
+	struct range {
+		int l, r;
+		struct iterator {
+			int val;
+			int operator*() const { return val; }
+			bool operator!=(const iterator &other) const { return val != other.val; }
+			void operator++() { ++val; }
+		};
+		iterator begin() const { return { l }; }
+		iterator end() const { return { r }; }
+	};
+};
+
+inline Saif::range range(int r) { return Saif::range{ 0, r }; }
+inline Saif::range range(int l, int r) { return Saif::range{ l, r }; }
+
 /* helper functions */
 mt19937 rnd(chrono::steady_clock::now().time_since_epoch().count());
 
 // mod
-long long mod_add(long long a, long long b, long long m = MOD) { return (a + b) % m; }
-long long mod_sub(long long a, long long b, long long m = MOD) { return (a - b + m) % m; }
-long long mod_mul(long long a, long long b, long long m = MOD) { return (a * b) % m; }
+inline long long mod_add(long long a, long long b, long long m = MOD) { return (a + b) % m; }
+inline long long mod_sub(long long a, long long b, long long m = MOD) { return (a - b + m) % m; }
+inline long long mod_mul(long long a, long long b, long long m = MOD) { return (a * b) % m; }
 long long mod_pow(long long a, long long b, long long m = MOD) {
 	long long res  = 1;
 	a             %= m;
@@ -154,11 +209,13 @@ long long mod_pow(long long a, long long b, long long m = MOD) {
 	return res;
 }
 long long mod_inv(long long a, long long m = MOD) { return mod_pow(a, m - 2, m); }
+
 // clang-format on
 /// }}}
 
-#define HAS_TESTCASES
+/* #define TESTCASES */
 /* #define PRINTCASES */
+/* #define LIGHTOJ */
 
 void sol() {
 }
@@ -168,11 +225,13 @@ void sol() {
 int32_t main() {
 	InTheNameofAllah
 	int testcases = 1;
-	#ifdef HAS_TESTCASES
+	#ifdef TESTCASES
 	cin >> testcases;
 	#endif
 	for (int i = 1; i <= testcases; ++i) {
 		#ifdef PRINTCASES
+		cout << "Case " << i << ":\n";
+		#elif LIGHTOJ
 		cout << "Case " << i << ": ";
 		#endif
 		sol();
