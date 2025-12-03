@@ -1,3 +1,25 @@
+local Path = require("plenary.path")
+
+-- helper function to check for a .cformat file up the directory tree
+local function has_cformat_file(bufnr)
+	local dir = vim.fn.expand("%:p:h") -- current file directory
+	while dir ~= "/" do
+		if Path:new(dir, ".cformat"):exists() then
+			return true
+		end
+		dir = Path:new(dir):parent().filename
+	end
+	return false
+end
+
+-- conditional formatter for C/C++
+local function c_formatter(bufnr)
+	if has_cformat_file(bufnr) then
+		return { "clang-format" }
+	end
+	return { " " }
+end
+
 return {
 	"stevearc/conform.nvim",
 	event = "BufWritePre", -- uncomment for format on save
@@ -9,15 +31,19 @@ return {
 		},
 
 		formatters_by_ft = {
+			c = c_formatter,
 			cpp = { "clang-format" },
 			css = { "prettier" },
 			go = { "golines", "goimports", "gofmt", "gofumpt" },
-			h = { " " },
+			h = c_formatter,
 			haskell = { "fourmolu" },
+			prisma = { "prisma_format" },
 			html = { "prettier" },
-			javascript = { "prettier" },
-			javascriptreact = { "prettier" },
-			json = { "clang-format" },
+			javascript = { "biome", "biome-organize-imports" },
+			javascriptreact = { "biome", "biome-organize-imports" },
+			typescript = { "biome", "biome-organize-imports" },
+			typescriptreact = { "biome", "biome-organize-imports" },
+			json = { "biome" },
 			lua = { "stylua" },
 			markdown = { "prettier_md" },
 
@@ -31,13 +57,22 @@ return {
 
 			rmd = { "prettier_md" },
 			rust = { "rustfmt", lsp_format = "fallback" },
-			sql = { "sql-formatter" },
+			sql = { "sleek" },
+			sh = { "shfmt" },
 			typst = { "prettypst" }, --"typstfmt" },
 		},
 
 		formatters = {
 			prettier = {
-				prepend_args = { "--print-width", "80", "--use-tabs", "--tab-width", "4" },
+				prepend_args = {
+					"--config-precedence",
+					"file-override",
+					"--print-width",
+					"80",
+					"--use-tabs",
+					"--tab-width",
+					"4",
+				},
 			},
 			prettier_md = {
 				command = "prettier",
@@ -52,6 +87,9 @@ return {
 					"--prose-wrap",
 					"always",
 				},
+			},
+			prisma_format = {
+				command = "prisma format",
 			},
 			prettypst = {
 				prepend_args = { "--style=otbs" },

@@ -23,7 +23,7 @@ require("lazy").setup({
 		import = "nvchad.plugins",
 	},
 
-	{ import = "plugins" },
+	{ import = "plugin" },
 }, lazy_config)
 
 -- load theme
@@ -46,3 +46,5 @@ end
 vim.schedule(function()
 	require("mappings")
 end)
+
+vim.cmd([[set exrc]])
