@@ -34,16 +34,23 @@ set -gx BAT_THEME "gruvbox-dark"
 set -gx BUN_INSTALL "$XDG_DATA_HOME/bun"
 set -gx CALCHISTFILE "$XDG_CACHE_HOME"/calc_history
 set -gx CARGO_HOME "$XDG_DATA_HOME"/cargo
+set -gx CLAUDE_CONFIG_DIR "$XDG_CONFIG_HOME"/claude
 set -gx DOTNET_CLI_HOME "$XDG_DATA_HOME"/dotnet
+set -gx DOCKER_CONFIG "$XDG_CONFIG_HOME"/docker
 set -gx ELINKS_CONFDIR "$XDG_CONFIG_HOME"/elinks
 set -gx GNUPGHOME "$XDG_DATA_HOME"/gnupg
 set -gx GOPATH "$XDG_DATA_HOME"/go
+set -gx GOROOT "/usr/local/go"
 set -gx GRADLE_USER_HOME "$XDG_DATA_HOME"/gradle
 set -gx GTK2_RC_FILES "$XDG_CONFIG_HOME"/gtk-2.0/gtkrc
 set -gx LESSHISTFILE "$XDG_STATE_HOME"/less/history
 set -gx MAXIMA_USERDIR "$XDG_CONFIG_HOME"/maxima
 set -gx NIMBLE_DIR "$XDG_DATA_HOME"/nimble
+set -gx NVIM_NOTTYFAST 1
 set -gx NODE_REPL_HISTORY "$XDG_DATA_HOME"/node_repl_history
+set -gx NPM_CONFIG_CACHE "$XDG_CACHE_HOME"/npm
+set -gx NPM_CONFIG_INIT_MODULE "$XDG_CONFIG_HOME"/npm/config/npm-init.js
+set -gx NPM_CONFIG_TMP "$XDG_RUNTIME_DIR"/npm
 set -gx NPM_CONFIG_USERCONFIG "$XDG_CONFIG_HOME"/npm/npmrc
 set -gx MASON_DIR "$XDG_DATA_HOME"/nvim/mason
 set -gx PASSWORD_STORE_DIR "$XDG_DATA_HOME"/pass
@@ -82,7 +89,7 @@ type -q doas && set prevesc doas || set prevesc sudo
 # First line removes the path; second line sets it.  Without the first line,
 # your path gets massive && fish becomes very slow.
 set -e fish_user_paths
-set -U fish_user_paths $HOME/.local/bin $HOME/Applications/{,flutter/bin} \
+set -U fish_user_paths $HOME/.local/bin $HOME/Applications/{,flutter/bin,opencode/bin} \
 	$MASON_DIR/bin/ \
 	/opt/shutil/bin/ \
 	/usr/local/texlive/2025/bin/x86_64-linux/ \
@@ -434,7 +441,6 @@ alias ip='ip --color=auto'
 
 # editor
 alias edit='echo "$EDITOR is currently set as your default editor. If you want to change it, then edit the fish config file at $HOME/.config/fish/config.fish"; $EDITOR'
-#alias nvim="~/.local/bin/st-noborder.sh nvim"
 abbr -ag v  nvim
 abbr -ag vi vim
 
