@@ -69,6 +69,19 @@ vim.api.nvim_create_autocmd("BufEnter", { -- Load CP template
 	end,
 })
 
+vim.api.nvim_create_autocmd("BufEnter", { -- Load CP template
+	pattern = "*/cp/*.py",
+	group = "cp",
+	callback = function()
+		vim.api.nvim_set_keymap(
+			"n",
+			"<F8>",
+			":0read ~/.vim/snippets/cp/py_template.py<CR>/def sol():<CR>:nohl<CR>o",
+			{ noremap = true, silent = true }
+		)
+	end,
+})
+
 -- C/C++ AutoCMDs
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = { "c", "cpp", "h", "hpp" },

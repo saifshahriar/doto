@@ -5,7 +5,8 @@ local map = vim.keymap.set
 -- Basic
 map("n", ";", ":", { desc = "CMD enter command mode" })
 map("i", "jj", "<ESC>", { desc = "jj for quick esc" })
-map("n", "<C-y>", "m0ggVGy`0", { desc = "jj for quick esc" })
+-- map("n", "<C-y>", "m0ggVGy`0", { desc = "Copy content of whole file" })
+map("n", "<C-y>", "m0gg0vG$y`0", { desc = "Copy content of whole file" })
 map("n", "<leader>H", ":nohl<CR>", { desc = "Unhighlight" })
 
 -- Quick save and quit
@@ -28,8 +29,8 @@ vim.cmd([[
 -- Navigation
 map("i", "<C-a>", "<Home>", { desc = "Move to start of line" })
 map("i", "<C-e>", "<End>", { desc = "Move to end of line" })
-map("i", "<C-f>", "<Right>", { desc = "Move forward one character" })
-map("i", "<C-b>", "<Left>", { desc = "Move backward one character" })
+-- map("i", "<C-f>", "<Right>", { desc = "Move forward one character" })
+-- map("i", "<C-b>", "<Left>", { desc = "Move backward one character" })
 map("i", "<M-f>", "<C-o>w", { desc = "Move forward one word" })
 map("i", "<M-b>", "<C-o>b", { desc = "Move backward one word" })
 map("i", "<M-Right>", "<C-o>w", { desc = "Move forward one word" })
@@ -39,14 +40,13 @@ map("i", "<C-d>", "<Del>", { desc = "Delete character under the cursor" })
 map("i", "<M-d>", "<C-o>dw", { desc = "Delete word before the cursor" })
 map("i", "<C-w>", "<C-o>db", { desc = "Delete word before the cursor" })
 map("i", "<C-u>", "<C-o>d0", { desc = "Delete from cursor to start of line" })
-map("i", "<C-k>", "<C-o>d$", { desc = "Delete from cursor to end of line" })
 -- Undo
 map("i", "<C-z>", "<C-o>u", { desc = "Undo" })
 -- Navigation
 map("c", "<C-a>", "<Home>", { desc = "Move to start of line" })
 map("c", "<C-e>", "<End>", { desc = "Move to end of line" })
-map("c", "<C-f>", "<Right>", { desc = "Move forward one character" })
-map("c", "<C-b>", "<Left>", { desc = "Move backward one character" })
+-- map("c", "<C-f>", "<Right>", { desc = "Move forward one character" })
+-- map("c", "<C-b>", "<Left>", { desc = "Move backward one character" })
 map("c", "<M-f>", "<C-Right>", { desc = "Move forward one word" })
 map("c", "<M-b>", "<C-Left>", { desc = "Move backward one word" })
 map("c", "<M-Right>", "<C-Right>", { desc = "Move forward one word" })
@@ -61,6 +61,6 @@ map("c", "<C-d>", "<Del>", { desc = "Delete character under the cursor" })
 map("c", "<C-z>", "<C-o>u", { desc = "Undo" })
 
 -- Custom Functions
-map("n", "<F5>", ":lua Compile()<CR>", { desc = "Compile current file", noremap = true, silent = true })
+map("n", "<F5>", ":Compile<CR>", { desc = "Compile current file", noremap = true, silent = true })
 
 -- map({ "n", "i", "v" }, "<C-s>", "<cmd> w <cr>")

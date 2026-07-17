@@ -4,17 +4,18 @@ return {
 		require("nvchad.configs.lspconfig").defaults()
 
 		local servers = {
-			"html",
-			"cssls",
-			"clangd",
-			"luals",
 			"biome",
+			"clangd",
+			"cssls",
 			"gopls",
-			"ruff",
-			"prismals",
-			"rust-analyzer",
-			"taplo",
+			"html",
 			"jdtls",
+			"luals",
+			"prismals",
+			"ruff",
+			"rust_analyzer",
+			"taplo",
+			"tinymist",
 		}
 		vim.lsp.enable(servers)
 
@@ -24,7 +25,12 @@ return {
 				"--header-insertion=iwyu",
 				"--header-insertion-decorators=0",
 				"--clang-tidy",
+				-- "--enable-config",
 			},
+		})
+
+		vim.lsp.config("ruff", {
+			cmd = { "ruff", "check", "--ignore", "E741" },
 		})
 	end,
 }

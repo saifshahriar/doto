@@ -1,0 +1,104 @@
+# vim: foldmethod=marker
+
+# {{{ Code Snippets
+snippet cpp Clean CPP Template
+	#include <iostream>
+	using namespace std;
+
+	int main() {
+		$1
+	}
+
+snippet cp Clean Competitive Programming Template
+	/*
+	 * Author: Saif Shahriar
+	 */
+
+	#define InTheNameofAllah ios::sync_with_stdio(0), cin.tie(0);
+	#ifdef ONPC
+	#include <saif.hpp>
+	#define debug(x) cerr << #x <<" "; cerr << x << '\n';
+	#else
+	#include <bits/stdc++.h>
+	#include <ext/pb_ds/assoc_container.hpp>
+	#include <ext/pb_ds/tree_policy.hpp>
+	#define debug(...)
+	using namespace std;
+	using namespace __gnu_pbds;
+	#endif
+
+	#define TESTCASES
+
+	void sol() {
+		${1:// Implement}
+	}
+
+	int32_t main() {
+		InTheNameofAllah
+		int testcases = 1;
+		#ifdef TESTCASES
+		cin >> testcases;
+		#endif
+		for (int i = 1; i <= testcases; ++i)
+			sol();
+	}
+# }}}
+# {{{ Competitive Programming Macros
+snippet el #define el '\n'
+	'\n'
+
+snippet nl #define nl cout << '\n'
+	cout << '\n';
+
+snippet len #define len(x) ((int)((x).size()))
+	len(${1:var})$0
+
+snippet all #define all(x) (x).begin(), (x).end()
+	${1:var}.begin(), $1.end()$0
+
+snippet all( #define all(x) (x).begin(), (x).end()
+	${1:var}.begin(), $1.end()$0
+
+snippet rall #define rall(x) (x).rbegin(), (x).rend()
+	${1:var}.rbegin(), $1.rend()$0
+
+snippet rall( #define rall(x) (x).rbegin(), (x).rend()
+	${1:var}.rbegin(), $1.rend()$0
+
+snippet ctod #define ctod(c) (c - '0')
+	($1 - '0')$0
+
+snippet dtoc #define dtoc(d) ('0' + d)
+	('0' + $1)$0
+
+snippet TF C++ CP MACRO
+	cout << (${1:expression} ? "True" : "False") << '\n';$0
+
+snippet yes C++ CP MACRO
+	cout << "YES\n"
+
+snippet no C++ CP MACRO
+	cout << "NO\n"
+
+snippet yno C++ CP MACRO
+	cout << (${1:expression} ? "YES" : "NO") << '\n';$0
+
+snippet cs C++ CP MACRO
+	constexpr ${1:type} ${2:var} = ${3:((int)1e5 + 5)};
+	$0
+
+snippet for C++ CP MACRO
+	for (int ${1:i} = ${2:0}; $1 < ${3:n}; ++$1) {
+		${0:// statement}
+	}
+# }}}
+# {{{ Type Definition Macros
+snippet ll C++ CP MACRO
+	long long
+
+snippet ull C++ CP MACRO
+	unsigned long long
+
+snippet ld C++ CP MACRO
+	long double
+# }}}

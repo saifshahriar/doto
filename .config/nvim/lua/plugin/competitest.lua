@@ -3,6 +3,7 @@ return {
 	dependencies = "MunifTanjim/nui.nvim",
 	config = function()
 		vim.keymap.set("n", "<leader>cr", ":CompetiTest run<CR>", {})
+		vim.keymap.set("n", "<leader>cnr", ":CompetiTest run_no_compile<CR>", {})
 		vim.keymap.set("n", "<leader>cs", ":CompetiTest show_ui<CR>", {})
 		vim.keymap.set("n", "<leader>ct", ":CompetiTest receive testcases<CR>", {})
 		vim.keymap.set("n", "<leader>cma", ":CompetiTest add_testcase<CR>", {})
@@ -35,12 +36,15 @@ return {
 			compile_directory = ".",
 			compile_command = {
 				cpp = {
-					exec = "g++",
+					exec = "/usr/bin/g++",
+					-- exec = "g++",
 					args = {
 						-- "-D_GLIBCXX_DEBUG",
 						-- "-fsanitize=address",
 						-- "-fsanitize=address,undefined",
 						"-std=c++17",
+						-- "-std=c++23",
+						-- "-O0",
 						"-Wall",
 						"-Wextra",
 						-- "-fpch-preprocess",
@@ -48,6 +52,9 @@ return {
 						-- "-O2",
 						"-DONPC",
 						-- "-DCIDE",
+						-- "-fno-exceptions",
+						-- "-fno-rtti",
+						-- "-ftime-report",
 						"$(FNAME)",
 						"-o",
 						"$(FNOEXT)",
@@ -61,7 +68,7 @@ return {
 				c = { exec = "./$(FNOEXT)" },
 				cpp = { exec = "./$(FNOEXT)" },
 				rust = { exec = "./$(FNOEXT)" },
-				python = { exec = "python3", args = { "$(FNAME)" } },
+				python = { exec = "pypy", args = { "$(FNAME)" } },
 			},
 			testcases_directory = "./testcases",
 			testcases_input_file_format = "$(FNOEXT)_input_$(TCNUM).txt",

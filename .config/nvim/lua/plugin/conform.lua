@@ -59,10 +59,19 @@ return {
 			rust = { "rustfmt", lsp_format = "fallback" },
 			sql = { "sleek" },
 			sh = { "shfmt" },
-			typst = { "prettypst" }, --"typstfmt" },
+			typst = { "typstyle" }, --"typstfmt" },
 		},
 
 		formatters = {
+			typstyle = {
+				prepend_args = {
+					"-t",
+					"4",
+					"-l",
+					"65",
+					"--wrap-text",
+				},
+			},
 			prettier = {
 				prepend_args = {
 					"--config-precedence",

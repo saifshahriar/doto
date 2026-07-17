@@ -1,0 +1,24 @@
+return {
+	"zbirenbaum/copilot.lua",
+	cmd = "Copilot",
+	event = "InsertEnter",
+	config = function()
+		require("copilot").setup({
+			suggestion = { enabled = false },
+			panel = { enabled = false },
+			filetypes = {
+				cpp = false, -- disable for C++
+				markdown = true, -- overrides default
+				lua = true,
+				rust = false, -- overrides default
+				sh = function()
+					if string.match(vim.fs.basename(vim.api.nvim_buf_get_name(0)), "^%.env.*") then
+						-- disable for .env files
+						return false
+					end
+					return true
+				end,
+			},
+		})
+	end,
+}

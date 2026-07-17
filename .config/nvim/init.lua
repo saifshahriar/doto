@@ -48,3 +48,15 @@ vim.schedule(function()
 end)
 
 vim.cmd([[set exrc]])
+
+-- Snippets
+vim.g.snipmate_snippets_path = vim.fn.stdpath("config") .. "/snippets/snipmate"
+
+-- vim.cmd([[
+--     iabbrev [ <:
+--     iabbrev ] :>
+--     iabbrev { <%
+--     iabbrev } %>
+--     iabbrev # %:
+--     iabbrev ## %:%:
+-- ]])

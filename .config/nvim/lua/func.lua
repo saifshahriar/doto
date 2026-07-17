@@ -2,14 +2,17 @@
 -- Custom Functions --
 ----------------------
 --
--- Shortcuts for Compiling Files
+-- ======================
+-- Compile: Shortcuts for Compiling Files
+-- ======================
 function Compile()
 	local filename = vim.fn.expand("%")
+	local fnoext = vim.fn.expand("%:t:r")
 	local filetype = vim.bo.filetype
 	local command
 	local interpreted = false
 	local time = "/usr/bin/time -f '\ntook: %es'"
-	local interpreted_langs = { "c", "python", "lua" }
+	local interpreted_langs = { "c", "cpp", "python", "lua" }
 
 	for _, v in ipairs(interpreted_langs) do
 		if v == filetype then
@@ -23,10 +26,15 @@ function Compile()
 		command = "Rscript -e \"rmarkdown::render('" .. filename .. "', output_format = 'pdf_document')\""
 	elseif filetype == "c" then
 		command = "tcc -run" .. " " .. filename
+	elseif filetype == "cpp" then
+		command = "g++ " .. filename .. " -o " .. fnoext .. " && ./" .. fnoext
 	elseif filetype == "python" then
 		command = "python3" .. " " .. filename
 	elseif filetype == "lua" then
 		command = "lua" .. " " .. filename
+	else
+		vim.api.nvim_echo({ { "✗ Filetype " .. filetype .. " not supported", "ErrorMsg" } }, false, {}) -- Red
+		return
 	end
 
 	if interpreted == true then
@@ -75,3 +83,62 @@ function Compile()
 		})
 	end
 end
+
+-- ======================
+-- Create Neovim commands
+-- ======================
+vim.api.nvim_create_user_command("Compile", Compile, {})
+
+-- local telescope = require("telescope.builtin")
+-- local actions = require("telescope.actions")
+-- local action_state = require("telescope.actions.state")
+--
+-- function InsertSnippet()
+-- 	-- Line where to insert (searching for your marker comment)
+-- 	local marker = "// INSERT_ALGO_HERE"
+-- 	local line_num = nil
+-- 	for i = 1, vim.fn.line("$") do
+-- 		local text = vim.fn.getline(i)
+-- 		if text:match(marker) then
+-- 			line_num = i
+-- 			break
+-- 		end
+-- 	end
+--
+-- 	if not line_num then
+-- 		print("Marker not found!")
+-- 		return
+-- 	end
+--
+-- 	-- Your snippets folder
+-- 	local snippet_dir = vim.fn.expand("~/Git/dotfiles/")
+--
+-- 	-- Use Telescope to pick a snippet file
+-- 	telescope.find_files({
+-- 		cwd = snippet_dir,
+-- 		attach_mappings = function(prompt_bufnr, map)
+-- 			actions.select_default:replace(function()
+-- 				local selection = action_state.get_selected_entry()
+-- 				actions.close(prompt_bufnr)
+--
+-- 				-- Build full path
+-- 				local filepath = snippet_dir .. "/" .. selection.value
+--
+-- 				-- Read file content
+-- 				local f = io.open(filepath, "r")
+-- 				if not f then
+-- 					print("Cannot open file:", filepath)
+-- 					return
+-- 				end
+-- 				local content = f:read("*all")
+-- 				f:close()
+--
+-- 				-- Insert below the marker
+-- 				vim.api.nvim_buf_set_lines(0, line_num, line_num, false, vim.split(content, "\n"))
+-- 			end)
+-- 			return true
+-- 		end,
+-- 	})
+-- end
+--
+-- vim.api.nvim_create_user_command("InsertSnippet", InsertSnippet, {})
